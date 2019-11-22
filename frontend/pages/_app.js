@@ -7,7 +7,7 @@ class MyApp extends App {
     static async getInitialProps({ Component, ctx }) {
         let pageProps = {};
         if(Component.getInitialProps) {
-            props = await Component.getInitialProps(ctx);
+            pageProps = await Component.getInitialProps(ctx);
         }
         // This exposes the query to the user
         pageProps.query = ctx.query;
