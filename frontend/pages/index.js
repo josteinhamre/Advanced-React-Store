@@ -1,17 +1,8 @@
-// import React from 'react';
-import Link from 'next/link';
-
-
-// class Home extends React.Component {
-
-//     render() {
-//         return <p>Hello!</p>
-//     }
-// }
+import Items from '../components/Items'
 
 const Home = props => (
     <div>
-        <p>Hello!</p>
+        <Items />
     </div>
 );
 

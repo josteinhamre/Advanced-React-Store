@@ -1,9 +1,9 @@
 import Link from 'next/link';
-
+import CreateItem from '../components/CreateItem'
 
 const Home = props => (
     <div>
-        <p>Sell!</p>
+        <CreateItem />
     </div>
 );
 
