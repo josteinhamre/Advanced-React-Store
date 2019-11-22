@@ -1,20 +1,35 @@
 import React, { Component } from 'react';
-import { Mutation } from 'react-apollo';
+import { Mutation, Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import Form from './styles/Form';
 import formatMoney from '../lib/formatMoney';
 import Error from './ErrorMessage'
 import Router from 'next/router'
 
-const CREATE_ITEM_MUTATION = gql`
-    mutation CREATE_ITEM_MUTATION(
-        $title: String!
-        $price: Int!
-        $description: String!
+const SINGLE_ITEM_QUERY = gql`
+    query SINGLE_ITEM_QUERY($id: ID!) {
+        item(where: {id: $id}) {
+            id
+            title
+            price
+            description
+            image
+            largeImage
+        }
+    }
+`;
+
+const UPDATE_ITEM_MUTATION = gql`
+    mutation UPDATE_ITEM_MUTATION(
+        $id: ID!
+        $title: String
+        $price: Int
+        $description: String
         $image: String
         $largeImage: String
     ) {
-        createItem(
+        updateItem(
+            id: $id
             title: $title
             price: $price
             description: $description
@@ -27,13 +42,8 @@ const CREATE_ITEM_MUTATION = gql`
 `;
 
 
-class CreateItem extends Component {
+class UpdateItem extends Component {
     state = {
-        title: '',
-        description: '',
-        image: '',
-        largeImage: '',
-        price: 0,
     };
 
     handleChange = (e) => {
@@ -61,21 +71,33 @@ class CreateItem extends Component {
         })
     };
 
+    updateItem = async (e, updateItemMutation) => {
+        e.preventDefault();
+        console.log(this.state);
+        const res = await updateItemMutation({
+            variables: {
+                id: this.props.id,
+                ...this.state,
+            },
+        });
+        console.log('Updated!')
+    };
+
     render() {
         return (
-            <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
-                {(createItem, { loading, error }) => (
-                    <Form onSubmit={async e => {
-                        // Stop the form from submitting
-                        e.preventDefault();
-                        // call the mutation
-                        const res = await createItem();
-                        // redirect to created item page.
-                        Router.push({
-                            pathname: '/item',
-                            query: { id: res.data.createItem.id },
-                        })
-                    }}>
+            <Query query={SINGLE_ITEM_QUERY} 
+                variables={{
+                    id: this.props.id
+                }}
+            >
+                {({ data, loading }) => {
+                    if (loading) return <p>Loading...</p>;
+                if (!data.item) return <p>Could not find requested item with id {this.props.id}</p>;
+                    return (
+
+            <Mutation mutation={UPDATE_ITEM_MUTATION} variables={this.state}>
+                {(updateItem, { loading, error }) => (
+                    <Form onSubmit={e => this.updateItem(e, updateItem)}>
                         <Error error={error}/>
                         <fieldset disabled={loading} aria-busy={loading}>
                             <label htmlFor="file">
@@ -87,7 +109,7 @@ class CreateItem extends Component {
                                     placeholder="Upload an image" 
                                     onChange={this.upploadFile}    
                                     />
-                                {this.state.image && <img src={this.state.image} alt={this.state.title} />}
+                                {(this.state.image && <img src={this.state.image} alt={this.state.title} />) || (data.item.image && <img src={data.item.image} alt={data.item.title} />)}
                             </label>
                             <label htmlFor="title">
                                 Title
@@ -97,7 +119,7 @@ class CreateItem extends Component {
                                     name="title"
                                     placeholder="Title" 
                                     required 
-                                    value={this.state.title}
+                                    defaultValue={data.item.title}
                                     onChange={this.handleChange}    
                                     />
 
@@ -110,7 +132,7 @@ class CreateItem extends Component {
                                     name="price"
                                     placeholder="Price" 
                                     required 
-                                    value={this.state.price}
+                                    defaultValue={data.item.price}
                                     onChange={this.handleChange}    
                                     />
 
@@ -122,19 +144,23 @@ class CreateItem extends Component {
                                     name="description"
                                     placeholder="Enter A Description" 
                                     required 
-                                    value={this.state.description}
+                                    defaultValue={data.item.description}
                                     onChange={this.handleChange}    
                                     />
 
                             </label>
-                            <button type="submit">submit{(loading) ? 'ing' : ''}</button>
+                            <button type="submit">Sav{(loading) ? 'ing' : 'e'} Changes</button>
                         </fieldset>
                     </Form>
                 )}
             </Mutation>
+                                    )
+                                }}
+                            </Query>
         )
     }
 }
 
-export default CreateItem;
-export { CREATE_ITEM_MUTATION };
+export default UpdateItem;
+export { UPDATE_ITEM_MUTATION };
+export { SINGLE_ITEM_QUERY };
