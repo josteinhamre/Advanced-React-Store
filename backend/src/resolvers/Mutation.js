@@ -39,7 +39,7 @@ const Mutations = {
         return ctx.db.mutation.deleteItem({ where }, info);
     },
 
-    async signUp(parent, args, ctx, info) {
+    async signup(parent, args, ctx, info) {
         args.email = args.email.toLowerCase();
         // Hash their password
         const password = await bcrypt.hash(args.password, 10);
@@ -63,6 +63,27 @@ const Mutations = {
 
         return user;
     },
+
+    async signin(parent, { email, password }, ctx, info) {
+        email = email.toLowerCase();
+        const user = await ctx.db.query.user({ where: { email } });
+        if(!user) {
+            throw new Error(`No user found for ${email}`);
+        }
+        const valid = await bcrypt.compare(password, user.password)
+        if(!valid) {
+            throw new Error('Invalid password');
+        }
+        const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+        // Set JWT token as cookie
+        ctx.response.cookie('token', token, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24 * 365,
+        });
+
+        return user;
+    },
+
 };
 
 module.exports = Mutations;
