@@ -11,11 +11,31 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
+    "/signup": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/index": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/reset": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
     "/items": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/signup": [
+    "/sell": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/item": [
+      "static/runtime/webpack.js",
+      "static/runtime/main.js"
+    ],
+    "/": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ]

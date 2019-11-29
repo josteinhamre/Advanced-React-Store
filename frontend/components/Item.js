@@ -8,37 +8,41 @@ import formatMoney from '../lib/formatMoney';
 import DeleteItem from './DeleteItem';
 
 export default class Item extends Component {
-    static propTypes = {
-        item: PropTypes.object.isRequired,
-    };
+  static propTypes = {
+    item: PropTypes.object.isRequired,
+  };
 
-    render() {
+  render() {
     const { item } = this.props;
-        return (
-            <ItemStyles>
-                {item.image && <img src={item.image} alt={item.title} />}
-                <Title>
-                    <Link href={{
-                        pathname: '/item',
-                        query: { id: item.id },
-                        }}>
-                        <a>{item.title}</a>
-                    </Link>
-                </Title>
-                    <PriceTag>{formatMoney(item.price)}</PriceTag>
-                    <p>{item.description}</p>
+    return (
+      <ItemStyles>
+        {item.image && <img src={item.image} alt={item.title} />}
+        <Title>
+          <Link
+            href={{
+              pathname: '/item',
+              query: { id: item.id },
+            }}
+          >
+            <a>{item.title}</a>
+          </Link>
+        </Title>
+        <PriceTag>{formatMoney(item.price)}</PriceTag>
+        <p>{item.description}</p>
 
-                    <div className="buttonList">
-                        <Link href={{
-                            pathname: '/update',
-                            query: { id: item.id },
-                        }}>
-                            <a>Edit</a>
-                        </Link>
-                        <button>Add to cart</button>
-                        <DeleteItem id={item.id}>Delete this item</DeleteItem>
-                    </div>
-            </ItemStyles>
-        );
-    }
+        <div className="buttonList">
+          <Link
+            href={{
+              pathname: '/update',
+              query: { id: item.id },
+            }}
+          >
+            <a>Edit</a>
+          </Link>
+          <button type="button">Add to cart</button>
+          <DeleteItem id={item.id}>Delete this item</DeleteItem>
+        </div>
+      </ItemStyles>
+    );
+  }
 }
