@@ -11,7 +11,7 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/signup": [
+    "/items": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
@@ -19,19 +19,7 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/reset": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/items": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/sell": [
-      "static/runtime/webpack.js",
-      "static/runtime/main.js"
-    ],
-    "/item": [
+    "/signup": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
