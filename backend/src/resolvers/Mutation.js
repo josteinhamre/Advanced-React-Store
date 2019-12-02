@@ -5,11 +5,15 @@ const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
 const { hasPermission } = require('../utils');
 
+function userLoggedIn(ctx) {
+  const { userId } = ctx.request;
+  if (!userId) throw new Error('You must be logged in perform this action!');
+  return userId;
+}
+
 const Mutations = {
   async createItem(parent, args, ctx, info) {
-    if (!ctx.request.userId) {
-      throw new Error('You must be logged in to do that!');
-    }
+    userLoggedIn(ctx);
     const item = await ctx.db.mutation.createItem(
       {
         data: {
@@ -28,9 +32,7 @@ const Mutations = {
   },
 
   async updateItem(parent, args, ctx, info) {
-    if (!ctx.request.userId) {
-      throw new Error('You must be logged in to do that!');
-    }
+    userLoggedIn(ctx);
     const updates = { ...args };
     delete updates.id;
 
@@ -182,10 +184,7 @@ const Mutations = {
   },
 
   async updatePermissions(parent, args, ctx, info) {
-    // User logged in?
-    if (!ctx.request.userId) {
-      throw new Error('You must be logged in to do that!');
-    }
+    userLoggedIn(ctx);
     // Has permissions to update permissions
     hasPermission(ctx.request.user, ['ADMIN', 'PERMISSIONUPDATE']);
 
@@ -198,6 +197,48 @@ const Mutations = {
         },
         where: {
           id: args.userId,
+        },
+      },
+      info
+    );
+  },
+
+  async addToCart(parent, args, ctx, info) {
+    const userId = userLoggedIn(ctx);
+
+    const [existingCartItem] = await ctx.db.query.cartItems(
+      {
+        where: {
+          user: { id: userId },
+          item: { id: args.id },
+        },
+      },
+      info
+    );
+    if (existingCartItem) {
+      console.log('This item is allready in their cart');
+      return ctx.db.mutation.updateCartItem(
+        {
+          where: { id: existingCartItem.id },
+          data: { quantity: existingCartItem.quantity + 1 },
+        },
+        info
+      );
+    }
+
+    return ctx.db.mutation.createCartItem(
+      {
+        data: {
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+          item: {
+            connect: {
+              id: args.id,
+            },
+          },
         },
       },
       info
