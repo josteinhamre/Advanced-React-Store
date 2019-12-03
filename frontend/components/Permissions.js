@@ -1,4 +1,5 @@
 import { Query, Mutation } from 'react-apollo';
+import React from 'react';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import Error from './ErrorMessage';
