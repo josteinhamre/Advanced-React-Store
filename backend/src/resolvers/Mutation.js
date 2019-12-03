@@ -244,6 +244,22 @@ const Mutations = {
       info
     );
   },
+
+  async removeFromCart(parent, args, ctx, info) {
+    const userId = userLoggedIn(ctx);
+    console.log('userId', userId);
+    const cartItem = await ctx.db.query.cartItem(
+      { where: { id: args.id } },
+      `{ id, user { id }}`
+    );
+    console.log('cartItem', cartItem);
+
+    if (!cartItem.user.id === userId) {
+      throw new Error(`The cartItem does not belong to you.`);
+    }
+    console.log('args', args);
+    return ctx.db.mutation.deleteCartItem({ where: { id: args.id } }, info);
+  },
 };
 
 module.exports = Mutations;
