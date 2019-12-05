@@ -280,6 +280,7 @@ const Mutations = {
             id 
             description 
             image
+            largeImage
           }
         }
       }`
@@ -298,9 +299,34 @@ const Mutations = {
     });
     console.log(charge);
     // 4. Convert the cart items to Order Items
+    const orderItems = user.cart.map(cartItem => {
+      const orderItem = {
+        ...cartItem.item,
+        quantity: cartItem.quantity,
+        user: { connect: { id: userId } },
+      };
+      delete orderItem.id;
+      return orderItem;
+    });
+    console.log('orderItems:', orderItems);
     // 5. Create the order
+    const order = await ctx.db.mutation.createOrder({
+      data: {
+        total: charge.amount,
+        charge: charge.id,
+        items: { create: orderItems },
+        user: { connect: { id: userId } },
+      },
+    });
+    console.log(order);
     // 6. Clear the cart
+    const cartItemIds = user.cart.map(cartItem => cartItem.id);
+    await ctx.db.mutation.deleteManyCartItems({
+      where: { id_in: cartItemIds },
+    });
+    console.log('hello');
     // 7. Return the Order to the client
+    return order;
   },
 };
 

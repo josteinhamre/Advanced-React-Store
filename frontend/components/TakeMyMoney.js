@@ -17,7 +17,6 @@ const CREATE_ORDER_MUTATION = gql`
       total
       items {
         id
-        title
       }
     }
   }
@@ -28,14 +27,18 @@ function totalItems(cart) {
 }
 
 class TakeMyMoney extends React.Component {
-  onToken = (res, createOrder) => {
-    console.log('onToken Called');
-    createOrder({
+  onToken = async (res, createOrder) => {
+    NProgress.start();
+    const order = await createOrder({
       variables: {
         token: res.id,
       },
     }).catch(err => {
       alert(err.message);
+    });
+    Router.push({
+      pathname: '/order',
+      query: { id: order.data.createOrder.id },
     });
   };
 
@@ -52,7 +55,9 @@ class TakeMyMoney extends React.Component {
                 amount={calcTotalPrice(me.cart)}
                 name="Sick Fits"
                 description={`Order of ${totalItems(me.cart)} items!`}
-                image={me.cart[0].item && me.cart[0].item.image}
+                image={
+                  me.cart.length && me.cart[0].item && me.cart[0].item.image
+                }
                 stripeKey="pk_test_yjVAwIgmxULyWZkV9ZuTjDM000acurl6cy"
                 currency="USD"
                 email={me.email}
