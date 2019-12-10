@@ -12,7 +12,7 @@
     "start": "next start -p $PORT",
     "test": "NODE_ENV=test jest --watch",
     "test-win": "SET NODE_ENV=test&& jest --watch",
-    "heroku-postbuild": "next build"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm install terser@3.14.1 --prefix client && npm run build --prefix client"
   },
   "author": "",
   "license": "ISC",
